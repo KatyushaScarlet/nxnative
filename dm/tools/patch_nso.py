@@ -1240,6 +1240,35 @@ def jump_adr_offsets(insl, j):
         ok = [tb for tb in table_cands(insl, tb_reg) if (t := targets(tb)) and all(fa <= x < fb and x % 4 == 0 for x in t)]
         return targets(ok[0]) if len(ok) == 1 else None
     return None
+def jump_mask_offsets(insl, j):
+    """Rabi-Ribi main+0x446f0c: the offset table with the bounds check a mask test instead of a cmp. The index is masked and one bit pattern is routed elsewhere:
+    and x27,x10,#7 earlier; mvn w18,w10; tst w18,#7; b.eq past the table; ldrsw x18,[x16,x27,lsl #2]; add x18,x18,x16; br x18.
+    The table has mask+1 entries; the mask must be 2^k-1. Tried only where jump_offsets and jump_adr_offsets find nothing. Returns all targets, or None."""
+    ctx = insl[max(0, j - 16):j]
+    add = next((p for p in reversed(ctx) if p.mnemonic == 'add' and re.fullmatch(r'x18, x\d+, x\d+', p.op_str)), None)
+    if not add: return None
+    _, t, rb = add.op_str.split(', ')
+    m_ld = next((re.fullmatch(rf'{t}, \[{rb}, x(\d+), lsl #2\]', p.op_str) for p in reversed(ctx) if p.mnemonic == 'ldrsw'), None)
+    if not m_ld: return None
+    ix = m_ld.group(1); k = insl.index(next(p for p in reversed(ctx) if p.mnemonic == 'ldrsw' and p.op_str == m_ld.string))
+    mask = None
+    for p in reversed(insl[max(0, k - 128):k]):   # the index's mask, e.g. and x27, x10, #7
+        _, w = p.regs_access()
+        if not any(p.reg_name(r) == 'x' + ix for r in w): continue
+        m = re.fullmatch(rf'x{ix}, x\d+, #(0x[0-9a-f]+|\d+)', p.op_str) if p.mnemonic == 'and' else None
+        if m: mask = int(m.group(1), 0)
+        break
+    if mask is None or mask & (mask + 1): return None   # only 2^k-1
+    n = mask + 1
+    found_tst = False
+    for p in reversed(insl[max(0, k - 128):k]):   # the bounds check: tst wT, #mask (on the index or its complement, as here)
+        m = re.fullmatch(r'w\d+, #(0x[0-9a-f]+|\d+)', p.op_str) if p.mnemonic == 'tst' else None
+        if m and int(m.group(1), 0) == mask: found_tst = True; break
+    if not found_tst: return None
+    tb = table_base(insl, k, rb)
+    if tb is None or tb + 4 * n > len(IMG) or tb < 0: return None
+    tgt = [tb + struct.unpack_from('<i', IMG, tb + 4 * i)[0] for i in range(n)]
+    return tgt if all(0 <= x < TEXT_END and x % 4 == 0 for x in tgt) else None
 def table_cands(insl, rb):
     """Every address an adrp rb + add rb,rb,#lo pair in the function builds, sorted"""
     cands = set()
@@ -1532,7 +1561,7 @@ for fa, fb in funcs:
                         if width: break
                     break
             if not (base and width):
-                tgt = jump_offsets(insl, j) or jump_adr_offsets(insl, j)
+                tgt = jump_offsets(insl, j) or jump_adr_offsets(insl, j) or jump_mask_offsets(insl, j)
                 if not tgt and tail_call(insl, j): tailcalls.add(ins.address); continue
                 if not tgt and (far := jump_bytes_far(insl, j)): jumps[ins.address] = far; continue
                 if not tgt: tgt = jump_offsets(insl, j, copy_first=True, far_base=True)   # the index copied before the check (check_before_copy) or the base set far back, only where every other form failed

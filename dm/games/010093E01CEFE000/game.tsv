@@ -1,0 +1,55 @@
+# GUNDAM BREAKER 4: Bandai Namco, Unreal Engine 4.27 (one version 11 pak with the shaders inline in the cooked packages, MallocBinned3), SDK 12.3.2, NVN, CRIWARE sound;
+# update 1.12.0 (v720896). Brought up on the Android port (nx2android); the Mac bring-up and the shader tables are still to do.
+# Started from the NSP script's provisional profile (dm/games/profile_guess.py); the rewriter's engine-wide Unreal rules find their links on this build (ue_malloc.py,
+# ue_region.py, ue_cvar.py, ue_fixed_rate.py). Format: see dm/games/README.md
+
+# ---- Identity ----
+title_id	010093E01CEFE000
+program_id	010093E01CEFE000
+
+# ---- App ----
+name	GUNDAM BREAKER 4
+ipa	GundamBreaker4.ipa
+app_category	public.app-category.games
+
+# ---- Versions ----
+build	v720896	1.12.0	main=ba96dfdf82b7ac48ab945fef316c361c	subsdk0=dade22cfe6f24efe62d76409522c850b	sdk=5bcf525f24eb28658a8d67ac27800d9b
+package	v720896
+shader_versions	v720896
+
+# ---- Files ----
+# load order as on Horizon: main, subsdk*, sdk (subsdk0 = NintendoSDK_movie)
+modules	main subsdk0 sdk
+romfs_marker	GB4/Content/Paks/pakchunk0-Switch.pak
+zip_store	.pak:.metallib
+
+# ---- Graphics ----
+# 60 fps (30 on the Switch): the game's Switch device profile sets t.MaxFPS=30 (FrameRateLimit=30) and rhi.syncinterval=2, and its engine runs with bUseFixedFrameRate on,
+# so it steps and holds to UEngine::FixedFrameRate=30 whatever the cvars say. The host writes t.MaxFPS 60, rhi.SyncInterval 1 (hle_fpslock.c: the rewriter finds the console
+# variables by their names, dm/tools/ue_cvar.py) and UEngine::FixedFrameRate 60 (ue_fixed_rate.py's fixups), so the game asks for present interval 1 and steps at 60.
+# DM_FPS_TARGET=30 (Documents/env.txt on the iPhone) keeps the game's 30 and saves power
+fps_target	60
+
+# ---- Memory ----
+# Unreal Engine 4.27: nninitStartup reserves one address region for the engine, 62 GB by default; the rewriter's engine-wide gate on the store of its size (dm/tools/ue_region.py;
+# hle_svc.c; this build's store at main+0x1a525d0) gives it what the alias region has room for. Its FMallocBinned3 constructor call in GCreateMalloc (main+0x1a52c28) is cut by the
+# engine-wide rule (dm/tools/ue_malloc.py; the allocator object, made at run time, then runs on a host malloc zone, hle_uemalloc.c layout UE4_27), and the SDK-wide rules cut the SDK's
+# node area to 62 MB and align regions of 4 MB and more to 2 MB (dm/tools/sdk_patches.py, the SDK 12.3.2 build 5bcf525f..., the same build OCTOPATH TRAVELER II uses). Alias region
+# = node area + the region + 256 MB for regions made later; 256 MB stacks, 384 MB heap region
+mem_reserve	0xF0000000
+mem_alias	0xC8000000
+mem_stack	0x10000000
+app_pool	0xCD500000
+# the NPDM declares 80 MB of system resource
+sys_resource	0x5000000
+
+# ---- Input ----
+# plays with a controller, docked (1920x1080); the game has no touch or pointer input
+pad_layout	full
+
+# ---- Shader split ----
+# Unreal Engine 4.27 with no shader code archives: each material's shaders inline in its cooked package (.uexp) and the engine's global shaders in Engine/GlobalShaderCache-SF_GLSL_SWITCH.bin,
+# every one an LZ4 block (shader_split.py ue_inline_shaders, uepak.py inline_shaders). The pak's blocks are Oodle-compressed: the engine's own decoder in the Mac host decodes them
+# (uepak.Pak.read's decode, DM_OODLE_JOB). Unreal combines vertex and pixel shaders per draw from its pipeline state, so every vertex shader is made to link with any pixel shader
+shader_groups	GlobalShaderCache=global #Engine/=engine #GB4/=game
+shader_note	GUNDAM BREAKER 4 shaders

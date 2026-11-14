@@ -156,6 +156,7 @@ One row per profile; the notes are each profile's `README.md`.
 | [Portal 2](0100ABD01785C000/README.md) | `0100ABD01785C000` | 1.0.3 | 13.3.0 | Valve's Source engine (21 NROs) | NVN |
 | [PRAGMATA](0400C76024710000/README.md) | `0400C76024710000` | v196608 (Switch 2) | 20.5.15 (Ounce) | RE Engine, Havok, Wwise | NVN2 |
 | [Princess Peach: Showtime!](01007A3009184000/README.md) | `01007A3009184000` | 1.0.0 | 15.3.2 | Unreal Engine 4.27 (Good-Feel), Wwise | NVN |
+| [Rabi-Ribi](01005BF00E4DE000/README.md) | `01005BF00E4DE000` | 1.2.0 | 7.4.0 | CreSpirit's engine, run-time GLSLC | NVN |
 | [Raging Loop](010020400E1C2000/README.md) | `010020400E1C2000` | 1.0.0 (base) | 7.3.2 | Unity 2018.3.10f1 IL2CPP | NVN |
 | [Red Dead Redemption](01007820196A6000/README.md) | `01007820196A6000` | 1.0.7 | 15.3.2 | Rockstar's RAGE (Double Eleven port) | NVN |
 | [Resident Evil 4](0400569027BF4000/README.md) | `0400569027BF4000` | v131072 (Switch 2) | 21.4.3 (Ounce) | RE Engine, Havok, Wwise | NVN2 |

@@ -1,0 +1,40 @@
+# Rabi-Ribi: CreSpirit's 2D engine on NVN, SDK 7.4.0; modules main + subsdk0 (GLSLC, NVN's runtime shader compiler) + subsdk1 (NintendoSDK_movie) + sdk.
+# RomFS: PNG and Ogg art under pack/, area maps and fonts under data/, translations under localize/. No game file holds the shaders: main holds 5 GLSL sources and calls
+# glslcCompile in subsdk0, so the game compiles them with its own GLSLC at run time (as Three Houses' 9 built-in shaders are). Format: see dm/games/README.md
+
+# ---- Identity ----
+title_id	01005BF00E4DE000
+program_id	01005BF00E4DE000
+
+# ---- App ----
+name	Rabi-Ribi
+ipa	RabiRibi.ipa
+app_category	public.app-category.games
+
+# ---- Versions ----
+# the update NSP is v131072; the extracted version dir is v1 (display version 1.2.0 from the control data)
+build	v1	1.2.0	main=539e6bdf2b1108856106409e48f04c1e	subsdk0=a36dac0e0a5ed3b41482b6bb85625c73	subsdk1=a0492af5b413a8bbdd463a470e8991ba	sdk=e30d2170165e907aba457c79fd83383d
+package	v1
+shader_versions	v1
+
+# ---- Files ----
+modules	main subsdk0 subsdk1 sdk
+romfs_marker	dlc1/stream/bgm61.ogg
+zip_store	.map:.ogg:.otf:.png:.tga:.ttf
+
+# ---- Memory ----
+# the NPDM declares no system resource (META +0x14 = 0): the game uses SetHeapSize (main sets a heap of at most the pool - 64 MB: a 3328 MB heap region)
+mem_reserve	0x100000000
+mem_alias	0x10000000
+mem_stack	0x10000000
+app_pool	0xCD500000
+
+# ---- Input ----
+# a 2D platformer played with a controller; no touch or pointer input
+pad_layout	full
+
+# ---- Shader split ----
+shader_groups	/pack/=pack /data/=data /localize/=localize /dlc2/=dlc2 /dlc1/=dlc1 /dlc0/=dlc0 /glslc_capture/=runtime
+shader_note	Rabi-Ribi shaders
+# The game's shaders are compiled at run time with its own GLSLC (main holds GLSL sources, glslcCompile is in subsdk0): the NSP script captures the outputs on the Mac with
+# DM_GLSLC_CAPTURE=<version dir>/glslc_capture (hle_glslc.c), and shader_split.py reads them like any other GLSLC output.

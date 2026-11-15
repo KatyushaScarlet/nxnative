@@ -1,0 +1,43 @@
+# Magical Girl Witch Trials (Switch, update 2.0.1b = v65536): Unity 6000.0.72f1 IL2CPP with FMOD on NVN, SDK 21.4.7; modules main + subsdk0 (NintendoSDK_movie) + sdk.
+# 644 Addressables bundles under Data/StreamingAssets/aa/Switch hold 2.62 GB of the 2.65 GB RomFS; the shaders are Unity 6 Shader objects in those bundles (their type trees name the
+# engine version), which shader_split.py reads through unityfs.py as for Hollow Knight: Silksong's 6000.0 build. Started from the NSP script's provisional profile
+# (dm/games/profile_guess.py); the constants are the survey's (01006C5027060000_survey/survey.md). Format: see dm/games/README.md
+
+# ---- Identity ----
+title_id	01006C5027060000
+program_id	01006C5027060000
+
+# ---- App ----
+name	Magical Girl Witch Trials
+ipa	MagicalGirlWitchTrials.ipa
+app_category	public.app-category.adventure-games
+
+# ---- Versions ----
+# the update NSP is v65536; the extracted version dir is v65536 (display version 2.0.1b from the control data)
+build	v65536	2.0.1b	main=156d7aa515d945cff90bcd93ed688d49	subsdk0=92a5f1a1e8d50e4d05b2212f564bf226	sdk=ab3835b2a37b1916e296f27e82dd4e36
+package	v65536
+shader_versions	v65536
+
+# ---- Files ----
+# load order as on Horizon: main, subsdk*, sdk (subsdk0 = NintendoSDK_movie)
+modules	main subsdk0 sdk
+romfs_marker	Data/Managed/Metadata/global-metadata.dat
+zip_store	.bin:.bundle:.dat:.json:.ress:.xml
+
+# ---- Memory ----
+# the NPDM declares 16 MB of system resource (virtual address memory) and main never sets a heap: Unity 6's nninitStartup sets no StandardAllocator and reserves address regions itself
+# (AllocateAddressRegion + AllocateMemoryPages), so the game gets a 5 GB block with a 4.375 GB alias region where it maps its own memory
+mem_reserve	0x140000000
+mem_alias	0x118000000
+mem_stack	0x10000000
+app_pool	0xCD500000
+sys_resource	0x1000000
+
+# ---- Input ----
+# a visual novel played with a controller
+pad_layout	full
+
+# ---- Shader split ----
+# every bundle's Shader object holds the GLSL control section and code areas; shader_split.py reads them from the bundles and writes the profile's tables
+shader_groups	/Data/=data
+shader_note	Magical Girl Witch Trials shaders (Unity 6 Addressables bundles)

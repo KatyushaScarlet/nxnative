@@ -113,6 +113,7 @@ One row per profile; the notes are each profile's `README.md`.
 | [Kirby and the Forgotten Land](01004D300C5AE000/README.md) | `01004D300C5AE000` | 1.1.0 | 11.4.0 | HAL Laboratory's engine (NintendoWare) | NVN |
 | [Kirby Star Allies](01007E3006DDA000/README.md) | `01007E3006DDA000` | 4.0.0a | 4.4.1 | HAL Laboratory's engine (NintendoWare) | NVN |
 | [Luigi's Mansion 3](0100DCA0064A6000/README.md) | `0100DCA0064A6000` | 1.4.0 | 7.3.2 | Next Level Games' engine | NVN |
+| [Magical Girl Witch Trials](01006C5027060000/README.md) | `01006C5027060000` | 2.0.1b | 21.4.7 | Unity 6000.0.72f1 IL2CPP, FMOD | NVN |
 | [Mario & Luigi: Brothership](01006D0017F7A000/README.md) | `01006D0017F7A000` | 1.0.0 | 12.3.2 | Unreal Engine 4.27.2, Wwise | NVN |
 | [Mario Golf: Super Rush](0100C9C00E25C000/README.md) | `0100C9C00E25C000` | 4.0.0 | 11.4.0 | Camelot's engine, NintendoWare | NVN |
 | [Mario Kart World](0400C3F00006E000/README.md) | `0400C3F00006E000` | v0 (Switch 2) | 19.3.3 (Ounce) | Nintendo EPD (sead / agl / gsys, Pia) | NVN2 |
